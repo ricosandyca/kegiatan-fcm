@@ -13,6 +13,8 @@ import NotFoundPage from './pages/not-found'
 import Authorized from './middlewares/Authorized'
 import Unauthorized from './middlewares/Unauthorized'
 
+import Theme from './components/Theme'
+
 import { AuthContextProvider } from './store/auth'
 
 import './config/firebase'
@@ -34,12 +36,14 @@ const routes: RouteProps[] = [
 export default function () {
   return (
     <AuthContextProvider>
-      <Router>
-        <Switch>
-          { routes.map((props, i) => <Route key={i} {...props}/>) }
-          <Route component={NotFoundPage} />
-        </Switch>
-      </Router>
+      <Theme>
+        <Router>
+          <Switch>
+            { routes.map((props, i) => <Route key={i} {...props}/>) }
+            <Route component={NotFoundPage} />
+          </Switch>
+        </Router>
+      </Theme>
     </AuthContextProvider>
   )
 }
