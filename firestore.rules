@@ -28,7 +28,11 @@ service cloud.firestore {
 
     match /todos/{todoId} {
     	allow read: if isAuthorized() && isValidUserResource();
-      allow write: if isAuthorized() && isValidUserRequest();
+      allow create: if isAuthorized() && isValidUserRequest();
+      allow update: if isAuthorized()
+      	&& isValidUserResource()
+        && isValidUserRequest();
+      allow delete: if isAuthorized() && isValidUserResource();
     }
 
   }
