@@ -14,12 +14,21 @@ service cloud.firestore {
      * Is the request data matching with the authorized user id
      * @returns {Boolean} value of result
      */
-    function isValidUserData () {
+    function isValidUserRequest () {
       return request.resource.data.userId == request.auth.uid
     }
 
+    /**
+     * Is the resource data matching with the authorized user id
+     * @returns {Boolean} value of result
+     */
+    function isValidUserResource () {
+    	return resource.data.userId == request.auth.uid
+    }
+
     match /todos/{todoId} {
-    	allow read: if isAuthorized();
+    	allow read: if isAuthorized() && isValidUserResource();
+      allow write: if isAuthorized() && isValidUserRequest();
     }
 
   }
