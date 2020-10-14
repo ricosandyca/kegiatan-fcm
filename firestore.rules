@@ -26,13 +26,25 @@ service cloud.firestore {
     	return resource.data.userId == request.auth.uid
     }
 
-    match /todos/{todoId} {
+    match /tasks/{taskId} {
     	allow read: if isAuthorized() && isValidUserResource();
       allow create: if isAuthorized() && isValidUserRequest();
       allow update: if isAuthorized()
       	&& isValidUserResource()
         && isValidUserRequest();
       allow delete: if isAuthorized() && isValidUserResource();
+
+      /**
+       * Get current task data
+       * @returns {Object} value of current task data
+       */
+      function getTaskData () {
+      	return get(/databases/$(database)/documents/tasks/$(taskId)).data
+      }
+
+      match /{subcollection=**} {
+      	allow read, write: if getTaskData().userId == request.auth.uid;
+      }
     }
 
   }
