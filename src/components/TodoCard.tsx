@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 
-import * as todoDBServices from '../services/firestore/todo'
+import * as todoDBServices from '../services/firestore/task'
 
 export default function () {
   useEffect(() => {
