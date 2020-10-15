@@ -1,0 +1,18 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+  
+    /**
+     * Is the user authorized function
+     * @returns {Boolean} value of result
+     */
+    function isAuthorized () {
+      return request.auth != null
+    }
+
+    match /{userId}/{allPaths=**} {
+      allow read, write: if isAuthorized()
+      	&& userId == request.auth.uid
+    }
+  }
+}
