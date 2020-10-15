@@ -22,5 +22,5 @@ export type Task = {
 
 export type TaskTodo = {
   name?: string
-  status?: TaskTodoStatus
+  status: TaskTodoStatus
 }
