@@ -16,7 +16,16 @@ export default function () {
         .catch(() => setDownloadURL(undefined))
   }, [ref, isComplete])
 
+  const reset = () => {
+    setRef(undefined)
+    setPercentage(0)
+    setIsComplete(false)
+    setError(undefined)
+    setDownloadURL(undefined)
+  }
+
   const upload = (prefix: string, file: File) => {
+    reset()
     firebase
       .storage()
       .ref(`${prefix}/${file.name}`)
