@@ -1,64 +1,53 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import firebase from 'firebase/app'
 
-enum UploadStatus {
-  WAITING = 'WAITING',
-  UPLOADING = 'UPLOADING',
-  UPLOADED = 'UPLOADED',
-  ERROR = 'ERROR'
-}
+export const UPLOAD_STATUS_WAITING = 'waiting'
+export const UPLOAD_STATUS_UPLOADING = 'uploading'
+export const UPLOAD_STATUS_UPLOADED = 'uploaded'
+export const UPLOAD_STATUS_ERROR = 'error'
 
-const defaultRef: firebase.storage.Reference | undefined = undefined
-const defaultPercentage: number = 0
-const defaultStatus: UploadStatus = UploadStatus.WAITING
+type UploadStatus = typeof UPLOAD_STATUS_WAITING
+  | typeof UPLOAD_STATUS_UPLOADING
+  | typeof UPLOAD_STATUS_UPLOADED
+  | typeof UPLOAD_STATUS_ERROR
+
+const defaultStatus: UploadStatus = UPLOAD_STATUS_WAITING
+const defaultProgress: number = 0
 const defaultError: Error | undefined = undefined
-const defaultDownloadURL: string | undefined = undefined
 
 export default function () {
-  const [ref, setRef] = useState(defaultRef)
-
-  const [percentage, setPercentage] = useState(defaultPercentage)
   const [status, setStatus] = useState(defaultStatus)
+  const [progress, setProgress] = useState(defaultProgress)
   const [error, setError] = useState(defaultError)
-  const [downloadURL, setDownloadURL] = useState(defaultDownloadURL)
-
-  useEffect(() => {
-    if (status === UploadStatus.UPLOADED)
-      ref?.getDownloadURL()
-        .then(downloadURL => setDownloadURL(downloadURL))
-        .catch(() => setDownloadURL(undefined))
-  }, [ref, status])
 
   const reset = () => {
-    setRef(defaultRef)
     setStatus(defaultStatus)
-    setPercentage(defaultPercentage)
+    setProgress(defaultProgress)
     setError(defaultError)
-    setDownloadURL(defaultDownloadURL)
   }
 
-  const upload = (prefix: string, file: File) => {
+  const startUpload = (file: File, path = file.name) => {
     reset()
-    firebase
+    const uploadTaskRef = firebase
       .storage()
-      .ref(`${prefix}/${file.name}`)
+      .ref(path)
+    uploadTaskRef
       .put(file)
       .on(
         firebase.storage.TaskEvent.STATE_CHANGED,
-        function progress (progress) {
-          setStatus(UploadStatus.UPLOADING)
-          setRef(progress.ref)
-          setPercentage((progress.bytesTransferred / file.size) * 100)
+        function progress (snapshot) {
+          setStatus(UPLOAD_STATUS_UPLOADING)
+          setProgress((snapshot.bytesTransferred / file.size) * 100)
         },
         function error (err) {
-          setStatus(UploadStatus.ERROR)
+          setStatus(UPLOAD_STATUS_ERROR)
           setError(err)
         },
         function complete () {
-          setStatus(UploadStatus.UPLOADED)
+          setStatus(UPLOAD_STATUS_UPLOADED)
         }
       )
   }
 
-  return { upload, percentage, status, error, downloadURL }
+  return { status, progress, error, startUpload }
 }

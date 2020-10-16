@@ -5,7 +5,7 @@ import useUploadFile from '../hooks/useFileUpload'
 
 export default function () {
   const [file, setFile] = useState<File>()
-  const { percentage, status, error, downloadURL, upload } = useUploadFile()
+  const { status, progress, error, startUpload } = useUploadFile()
 
   function onChange (e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files && e.target.files.length >= 1) {
@@ -16,7 +16,7 @@ export default function () {
   function onSubmit (e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const userId = getCurrentUser()?.uid
-    if (file && userId) upload(userId, file)
+    if (file && userId) startUpload(file, `${userId}/${file.name}`)
   }
 
   return (
@@ -26,8 +26,7 @@ export default function () {
         <input type='file' onChange={onChange}/>
         <input type='submit' value='Upload'/>
       </form>
-      <div><b>Percentage: </b>{percentage}%</div>
-      <div><b>Download URL: </b>{downloadURL}</div>
+      <div><b>Percentage: </b>{progress}%</div>
       <div><b>Status: </b>{status}</div>
       <div><b>Error: </b>{error?.message}</div>
     </div>
