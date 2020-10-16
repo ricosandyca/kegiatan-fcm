@@ -1,27 +1,40 @@
 import { useState, useEffect } from 'react'
 import firebase from 'firebase/app'
 
-export default function () {
-  const [ref, setRef] = useState<firebase.storage.Reference>()
+enum UploadStatus {
+  WAITING = 'WAITING',
+  UPLOADING = 'UPLOADING',
+  UPLOADED = 'UPLOADED',
+  ERROR = 'ERROR'
+}
 
-  const [percentage, setPercentage] = useState(0)
-  const [isComplete, setIsComplete] = useState(false)
-  const [error, setError] = useState<Error>()
-  const [downloadURL, setDownloadURL] = useState<string>()
+const defaultRef: firebase.storage.Reference | undefined = undefined
+const defaultPercentage: number = 0
+const defaultStatus: UploadStatus = UploadStatus.WAITING
+const defaultError: Error | undefined = undefined
+const defaultDownloadURL: string | undefined = undefined
+
+export default function () {
+  const [ref, setRef] = useState(defaultRef)
+
+  const [percentage, setPercentage] = useState(defaultPercentage)
+  const [status, setStatus] = useState(defaultStatus)
+  const [error, setError] = useState(defaultError)
+  const [downloadURL, setDownloadURL] = useState(defaultDownloadURL)
 
   useEffect(() => {
-    if (isComplete)
+    if (status === UploadStatus.UPLOADED)
       ref?.getDownloadURL()
         .then(downloadURL => setDownloadURL(downloadURL))
         .catch(() => setDownloadURL(undefined))
-  }, [ref, isComplete])
+  }, [ref, status])
 
   const reset = () => {
-    setRef(undefined)
-    setPercentage(0)
-    setIsComplete(false)
-    setError(undefined)
-    setDownloadURL(undefined)
+    setRef(defaultRef)
+    setStatus(defaultStatus)
+    setPercentage(defaultPercentage)
+    setError(defaultError)
+    setDownloadURL(defaultDownloadURL)
   }
 
   const upload = (prefix: string, file: File) => {
@@ -33,17 +46,19 @@ export default function () {
       .on(
         'state_changed',
         function progress (progress) {
+          setStatus(UploadStatus.UPLOADING)
           setRef(progress.ref)
           setPercentage((progress.bytesTransferred / file.size) * 100)
         },
         function error (err) {
+          setStatus(UploadStatus.ERROR)
           setError(err)
         },
         function complete () {
-          setIsComplete(true)
+          setStatus(UploadStatus.UPLOADED)
         }
       )
   }
 
-  return { percentage, isComplete, error, downloadURL, upload }
+  return { upload, percentage, status, error, downloadURL }
 }

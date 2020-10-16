@@ -5,7 +5,7 @@ import useUploadFile from '../hooks/useFileUpload'
 
 export default function () {
   const [file, setFile] = useState<File>()
-  const { percentage, isComplete, error, downloadURL, upload } = useUploadFile()
+  const { percentage, status, error, downloadURL, upload } = useUploadFile()
 
   function onChange (e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files && e.target.files.length >= 1) {
@@ -28,7 +28,7 @@ export default function () {
       </form>
       <div><b>Percentage: </b>{percentage}%</div>
       <div><b>Download URL: </b>{downloadURL}</div>
-      <div><b>Status: </b>{isComplete ? 'Completed' : ''}</div>
+      <div><b>Status: </b>{status}</div>
       <div><b>Error: </b>{error?.message}</div>
     </div>
   )
