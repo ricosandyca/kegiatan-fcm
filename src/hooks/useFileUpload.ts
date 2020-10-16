@@ -44,7 +44,7 @@ export default function () {
       .ref(`${prefix}/${file.name}`)
       .put(file)
       .on(
-        'state_changed',
+        firebase.storage.TaskEvent.STATE_CHANGED,
         function progress (progress) {
           setStatus(UploadStatus.UPLOADING)
           setRef(progress.ref)
