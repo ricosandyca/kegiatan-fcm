@@ -3,6 +3,7 @@ import React from 'react'
 import TodoCard from '../components/TodoCard'
 import UploadFile from '../components/UploadFile'
 import BecomeAdminButton from '../components/BecomeAdminButton'
+import UploadedFileList from '../components/UploadedFileList'
 
 import signout from '../services/auth/signout'
 
@@ -15,6 +16,7 @@ export default function () {
         <TodoCard />
         <UploadFile />
         <BecomeAdminButton />
+        <UploadedFileList />
       </div>
     </div>
   )
