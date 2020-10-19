@@ -7,7 +7,7 @@
     "rules": "storage/storage.rules"
   },
   "hosting": {
-    "predeploy": "npm --prefix client run install && npm --prefix client run build",
+    "predeploy": "npm --prefix client install && npm --prefix client run build",
     "public": "client/build",
     "ignore": [
       "firebase.json",
